@@ -31,10 +31,11 @@ async def add_group(id):
 async def total_chat_count():
     count = group_data.count_documents({})
     return count
+
     
-async def add_user(user_id: int):
-    user_data.insert_one({'_id': user_id})
-    return
+async def get_all_chats(self):
+    return group_data.find({})
+
 
 async def full_userbase():
     user_docs = user_data.find()
