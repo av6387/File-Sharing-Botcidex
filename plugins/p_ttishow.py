@@ -7,4 +7,4 @@ async def new_group(client, message):
     for member in message.new_chat_members:
         if member.id == client.get_me().id:
             await add_group(message.chat.id)
-            await message.reply_text("Thanks for adding me!")￼Enter
+            await message.reply_text("Thanks for adding me!")
