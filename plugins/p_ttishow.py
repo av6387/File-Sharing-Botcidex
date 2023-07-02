@@ -1,4 +1,5 @@
-
+from bot import Bot
+from pyrogram import Client, filters
 
 @Bot.on_message(filters.new_chat_members)
 async def new_group(client, message):
