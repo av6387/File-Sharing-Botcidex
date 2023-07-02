@@ -5,7 +5,10 @@ import asyncio
 from bot import Bot
 from pyrogram import Client, filters
 from database.database import add_group, full_userbase, total_chat_count, get_all_chats
+from pyrogram.errors import InputUserDeactivated, UserNotParticipant, FloodWait, UserIsBlocked, PeerIdInvalid, ChatAdminRequired
 from config import ADMINS
+from pyrogram.types import Message
+
 
 @Bot.on_message(filters.new_chat_members)
 async def new_group(client, message):
@@ -15,9 +18,16 @@ async def new_group(client, message):
             await message.reply_text("Thanks for adding me!")
 
 
+@Bot.on_message(filters.command('status') & filters.private & filters.user(ADMINS))
+async def get_users(client: Bot, message: Message):
+    msg = await client.send_message(chat_id=message.chat.id, text=WAIT_MSG)
+    g_total = await total_chat_count()
+    users = await full_userbase()
+    await msg.edit(f"Total Users: `{len(users)}`\nTotal Groups: `{g_total}`")
 
-@Client.on_message(filters.command("grp_broadcast") & filters.user(ADMINS) & filters.reply)
-async def grp_brodcst(bot, message):
+
+@Bot.on_message(filters.command("grp_broadcast") & filters.user(ADMINS) & filters.reply)
+async def grp_brodcst(bot: Bot, message: Message):
     chats = await db.get_all_chats()
     b_msg = message.reply_to_message
     sts = await message.reply_text(
