@@ -32,7 +32,7 @@ async def total_chat_count():
     count = group_data.count_documents({})
     return count
 
-async def get_all_chats(self):
+async def get_all_chats():
     return group_data.find({})
 
 async def add_user(user_id: int):
