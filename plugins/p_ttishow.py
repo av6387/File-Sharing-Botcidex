@@ -28,13 +28,13 @@ async def get_users(client: Bot, message: Message):
 
 @Bot.on_message(filters.command("grp_broadcast") & filters.user(ADMINS) & filters.reply)
 async def grp_brodcst(bot: Bot, message: Message):
-    chats = await db.get_all_chats()
+    chats = await get_all_chats()
     b_msg = message.reply_to_message
     sts = await message.reply_text(
         text='Broadcasting your messages...'
     )
     start_time = time.time()
-    total_chats = await db.total_chat_count()
+    total_chats = await total_chat_count()
     done = 0
     failed =0
 
