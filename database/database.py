@@ -29,7 +29,7 @@ async def add_group(id):
     data = await group_data.find_one({'id':int(id)})
     if data:
         return
-    group_data.insert_one({'_id': int(id)})
+    group_data.insert_one({'id': int(id)})
     return
     
 async def add_user(user_id: int):
