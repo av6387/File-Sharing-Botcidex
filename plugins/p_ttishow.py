@@ -11,10 +11,10 @@ from pyrogram.types import Message
 
 
 @Bot.on_message(filters.new_chat_members)
-async def new_group(client, message):
+async def new_group(client: Bot, message):
     for member in message.new_chat_members:
-        if member.id == client.get_me().id:
-            await add_group(message.chat.id)
+        me = await client.get_me()
+        if member.id == me.id:
             await message.reply_text("Thanks for adding me!")
 
 
