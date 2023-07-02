@@ -21,16 +21,16 @@ async def present_user(user_id : int):
     return bool(found)
 
 
-async def is_group_exist(id):
-    
-    return bool(user)
-
 async def add_group(id):
-    data = await group_data.find_one({'id':int(id)})
+    data = group_data.find_one({'id':int(id)})
     if data:
         return
     group_data.insert_one({'id': int(id)})
     return
+
+async def total_chat_count():
+    count = group_data.count_documents({})
+    return count
     
 async def add_user(user_id: int):
     user_data.insert_one({'_id': user_id})
