@@ -1,6 +1,6 @@
 from bot import Bot
 from pyrogram import Client, filters
-from database.database import add_group
+from database.database import add_group, full_userbase, total_chat_count
 
 @Bot.on_message(filters.new_chat_members)
 async def new_group(client, message):
