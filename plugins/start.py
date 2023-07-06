@@ -15,12 +15,20 @@ from helper_func import subscribed, encode, decode, get_messages
 from database.database import add_user, del_user, full_userbase, present_user, delay_data
 
 
-
+LOOP = {}
 DELAY_DURATION = timedelta(seconds=110)  # Duration for delay between requests
+
+
+@Bot.on_message(filters.command('stop') & filters.private)
+async def stop_looop(client: Client, message: Message):
+    id = message.from_user.id
+    LOOP[id] = False
+    return 
 
 @Bot.on_message(filters.command('start') & filters.private & subscribed)
 async def start_command(client: Client, message: Message):
     id = message.from_user.id
+    LOOP[id] = True
     if not await present_user(user_id):
         try:
             await add_user(user_id)
@@ -81,6 +89,9 @@ async def start_command(client: Client, message: Message):
         await temp_msg.delete()
 
         for msg in messages:
+            if not LOOP.get(id): 
+                await message.reply_text("File sending stopped.")
+                return
 
             if bool(CUSTOM_CAPTION) & bool(msg.document):
                 caption = CUSTOM_CAPTION.format(previouscaption = "" if not msg.caption else msg.caption.html, filename = msg.document.file_name)
