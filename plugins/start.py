@@ -22,12 +22,12 @@ from database.database import add_user, del_user, full_userbase, present_user, d
 @Bot.on_message(filters.command('start') & filters.private & subscribed)
 async def start_command(client: Client, message: Message):
     id = message.from_user.id
+    current_time = time.time()
     if not await present_user(id):
         try:
             await add_user(id)
         except:
             pass
-    current_time = time.time()
     
     user_data = delay_data.find_one({'user_id': id})
     if not user_data or 'last_request_time' not in user_data:
