@@ -5,6 +5,7 @@
 
 import os
 import asyncio
+import time
 from pyrogram import Client, filters, __version__
 from pyrogram.enums import ParseMode
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
@@ -13,7 +14,7 @@ from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated
 from bot import Bot
 from config import ADMINS, FORCE_MSG, START_MSG, CUSTOM_CAPTION, DISABLE_CHANNEL_BUTTON, PROTECT_CONTENT
 from helper_func import subscribed, encode, decode, get_messages
-from database.database import add_user, del_user, full_userbase, present_user
+from database.database import add_user, del_user, full_userbase, present_user, delay_data
 
 
 
@@ -26,6 +27,21 @@ async def start_command(client: Client, message: Message):
             await add_user(id)
         except:
             pass
+    current_time = time.time()
+    
+    user_data = delay_data.find_one({'user_id': id})
+    if not user_data:
+        user_data = {'user_id': id, 'last_request_time': 0}
+        delay_data.insert_one(user_data)
+    else:
+        # Update the last request time for the user
+        delay_data.update_one({'user_id': id}, {'$set': {'last_request_time': current_time}})
+   
+    if user_data and current_time - user_data['last_request_time'] < 110:
+        remaining_time = int(110 - (current_time - user_data['last_request_time']))
+        await message.reply_text(f"Please try again after {remaining_time} seconds.")
+        return
+
     text = message.text
     if len(text)>7:
         try:
