@@ -1,6 +1,5 @@
 #(©)CodeXBotz
 #(©)VysakhTG 
-
 import os
 import asyncio
 import time
@@ -16,30 +15,33 @@ from helper_func import subscribed, encode, decode, get_messages
 from database.database import add_user, del_user, full_userbase, present_user, delay_data
 
 
+
+DELAY_DURATION = timedelta(seconds=110)  # Duration for delay between requests
+
 @Bot.on_message(filters.command('start') & filters.private & subscribed)
 async def start_command(client: Client, message: Message):
     id = message.from_user.id
-    current_time = datetime.now()
-    
-    if not await present_user(id):
+    if not await present_user(user_id):
         try:
-            await add_user(id)
+            await add_user(user_id)
         except:
             pass
     
     user_data = delay_data.find_one({'user_id': id})
+    current_time = datetime.now()
+    
     if not user_data or 'last_request_time' not in user_data:
-        user_data = {'user_id': id, 'last_request_time': 0}
+        user_data = {'user_id': id, 'last_request_time': current_time}
         delay_data.insert_one(user_data)
     else:
-        # Update the last request time for the user
+        request_time = user_data['last_request_time']
+        time_since_last_request = current_time - request_time
+        
+        if time_since_last_request < DELAY_DURATION:
+            remaining_time = DELAY_DURATION - time_since_last_request
+            await message.reply_text(f"Please try again after {remaining_time.seconds} seconds.")
+            return
         delay_data.update_one({'user_id': id}, {'$set': {'last_request_time': current_time}})
-   
-    if user_data and current_time - user_data['last_request_time'] < timedelta(seconds=110):
-        remaining_time = timedelta(seconds=110) - (current_time - user_data['last_request_time'])
-        await message.reply_text(f"Please try again after {remaining_time.seconds} seconds.")
-        return
-
 
     text = message.text
     if len(text)>7:
