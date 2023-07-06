@@ -30,7 +30,7 @@ async def start_command(client: Client, message: Message):
     current_time = time.time()
     
     user_data = delay_data.find_one({'user_id': id})
-    if not user_data:
+    if not user_data or 'last_request_time' not in user_data:
         user_data = {'user_id': id, 'last_request_time': 0}
         delay_data.insert_one(user_data)
     else:
