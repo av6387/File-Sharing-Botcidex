@@ -1,7 +1,5 @@
 #(©)CodeXBotz
-
-
-
+#(©)VysakhTG
 
 import pymongo, os
 from config import DB_URI, DB_NAME
@@ -13,7 +11,7 @@ database = dbclient[DB_NAME]
 
 user_data = database['users']
 group_data = database['groups']
-
+delay_data = database['delay']
 
 
 async def present_user(user_id : int):
